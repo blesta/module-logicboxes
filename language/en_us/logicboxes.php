@@ -69,6 +69,40 @@ $lang['Logicboxes.tab_nameservers.title'] = 'Name Servers';
 $lang['Logicboxes.tab_nameserver.field_ns'] = 'Name Server %1$s'; // %1$s is the name server number
 $lang['Logicboxes.tab_nameservers.field_submit'] = 'Update Name Servers';
 
+$lang['Logicboxes.tab_email_forwarding.title'] = 'Email Forwarding';
+$lang['Logicboxes.tab_email_forwarding.desc'] = 'Email forwarding is automatically directing email sent from one address to a different email address. For example, if you had an existing email address of email@email.com, and then registered the domain newdomain.com, you could use email forward to direct sales@newdomain.com to your existing email@email.com email address.';;
+$lang['Logicboxes.tab_email_forwarding.field_email_address'] = 'Email Address';
+$lang['Logicboxes.tab_email_forwarding.field_forward_to'] = 'Forward To';
+$lang['Logicboxes.tab_email_forwarding.field_delete'] = 'Delete';
+$lang['Logicboxes.tab_email_forwarding.field_submit'] = 'Update Forwarders';
+
+$lang['Logicboxes.tab_dnssec.title'] = 'DS (DNSSEC) Records';
+$lang['Logicboxes.tab_dnssec.title_add'] = 'Add DS (DNNSEC) Record';
+$lang['Logicboxes.tab_dnssec.keytag'] = 'Key Tag';
+$lang['Logicboxes.tab_dnssec.algorithm'] = 'Algorithm';    
+$lang['Logicboxes.tab_dnssec.digesttype'] = 'Digest Type';
+$lang['Logicboxes.tab_dnssec.digest'] = 'Digest';
+$lang['Logicboxes.tab_dnssec.field_delete'] = 'Delete';
+$lang['Logicboxes.tab_dnssec.field_add'] = 'Add';
+$lang['Logicboxes.tab_dnssec.no_records'] = 'No DS (DNSSEC) records have been created for this domain.';
+$lang['Logicboxes.tab_dnssec.title_disclaimer'] = 'Disclaimer'; 
+$lang['Logicboxes.tab_dnssec.warning_message1'] = 'You can use this page to manage the DS records for your domain. You should only use this page if you are comfortable with DS records and DNSSEC.';
+$lang['Logicboxes.tab_dnssec.warning_message2'] = 'When you manage DS records, <strong>the domain will stop resolving correctly</strong> if your nameservers are not configured correctly with the associated DNSSEC resource records.';
+
+$lang['Logicboxes.tab_dnsrecord.title'] = 'DNS Records';
+$lang['Logicboxes.tab_dnsrecord.title_add'] = 'Add Record';
+$lang['Logicboxes.tab_dnsrecord.record_type'] = 'Type';
+$lang['Logicboxes.tab_dnsrecord.host'] = 'Host';    
+$lang['Logicboxes.tab_dnsrecord.value'] = 'Value';
+$lang['Logicboxes.tab_dnsrecord.ttl'] = 'TTL';
+$lang['Logicboxes.tab_dnsrecord.priority'] = 'Priority';
+$lang['Logicboxes.tab_dnsrecord.port'] = 'Port';
+$lang['Logicboxes.tab_dnsrecord.weight'] = 'Weight';
+$lang['Logicboxes.tab_dnsrecord.field_delete'] = 'Delete';
+$lang['Logicboxes.tab_dnsrecord.field_add'] = 'Add';
+$lang['Logicboxes.tab_dnsrecord.no_records'] = 'No DNS records have been created for this domain.';
+$lang['Logicboxes.tab_dnsrecord.help_text'] = 'On this page you can add or delete A, AAAA, CNAME, MX, TXT and SRV DNS records. Please be ware that it might take some few minutes for DNS records to propagate.';
+
 $lang['Logicboxes.tab_settings.title'] = 'Settings';
 $lang['Logicboxes.tab_settings.field_registrar_lock'] = 'Registrar Lock';
 $lang['Logicboxes.tab_settings.field_registrar_lock_yes'] = 'Set the registrar lock. Recommended to prevent unauthorized transfer.';
