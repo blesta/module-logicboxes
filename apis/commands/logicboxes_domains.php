@@ -92,9 +92,12 @@ class LogicboxesDomains
      *          the customer's account the invoice will be paid and the order will be executed,
      *          else the order will remain pending in the system
      *      - KeepInvoice This will raise an Invoice for the Customer to pay later. The Order will be executed.
+     *  - purchase-privacy Adds the Privacy Protection service for the domain name.
+     *      Not supported for the following TLDs:
+     *      .ASIA, .AT, .AU, .CA, .CN, .ORG.CO, .MIL.CO, .GOV.CO, .EDU.CO, .DE, .ES, .EU, .HN, .IN, .NL, .NZ, .PRO, .RU, .SX, .TEL, .UK, .US
      *  - protect-privacy Enables / Disables the Privacy Protection setting for the domain name.
      *      Not supported for the following TLDs:
-     *      .US, .IN, .EU, .UK, .ASIA, .TEL, .CN, .NZ, .CO, .CA, .DE, .ES, .AU, .RU, .PRO, .NL, .SX, .HN
+     *      .ASIA, .AT, .AU, .CA, .CN, .ORG.CO, .MIL.CO, .GOV.CO, .EDU.CO, .DE, .ES, .EU, .HN, .IN, .NL, .NZ, .PRO, .RU, .SX, .TEL, .UK, .US
      *  - attr-name Mapping key of the extra details needed to register a domain name. (optional)
      *      - idnLanguageCode
      *      - Required for .ASIA:
@@ -165,9 +168,12 @@ class LogicboxesDomains
      *          the customer's account the invoice will be paid and the order will be executed,
      *          else the order will remain pending in the system
      *      - KeepInvoice This will raise an Invoice for the Customer to pay later. The Order will be executed.
+     *  - purchase-privacy Adds the Privacy Protection service for the domain name.
+     *      Not supported for the following TLDs:
+     *      .ASIA, .AT, .AU, .CA, .CN, .ORG.CO, .MIL.CO, .GOV.CO, .EDU.CO, .DE, .ES, .EU, .HN, .IN, .NL, .NZ, .PRO, .RU, .SX, .TEL, .UK, .US
      *  - protect-privacy Enables / Disables the Privacy Protection setting for the domain name.
      *      Not supported for the following TLDs:
-     *      .US, .IN, .EU, .UK, .ASIA, .TEL, .CN, .NZ, .CO, .CA, .DE, .ES, .AU, .RU, .PRO, .NL, .SX, .HN
+     *      .ASIA, .AT, .AU, .CA, .CN, .ORG.CO, .MIL.CO, .GOV.CO, .EDU.CO, .DE, .ES, .EU, .HN, .IN, .NL, .NZ, .PRO, .RU, .SX, .TEL, .UK, .US
      *  - ns An array of name servers of the domain name (optional)
      *  - attr-name Mapping key of the extra details needed to register a domain name. (optional)
      *      - Required for .ASIA:
@@ -383,6 +389,28 @@ class LogicboxesDomains
         return $this->api->submit('domains/modify-contact', $vars);
     }
 
+    // TODO: Doesn't seem to be required or do anything, fails with operation not permitted, investigate
+    /**
+     * Adds / Renews the Privacy Protection service for the specified Domain Registration Order.
+     * 
+     * @param array $vars An array of input params including:
+     *  - order-id Order Id of the Domain Registration Order for which the Privacy Protection service needs to be purchased / renewed.
+     *      Not supported for the following TLDs:
+     *      .ASIA, .AT, .AU, .CA, .CN, .ORG.CO, .MIL.CO, .GOV.CO, .EDU.CO, .DE, .ES, .EU, .HN, .IN, .NL, .NZ, .PRO, .RU, .SX, .TEL, .UK, .US
+     *  - invoice-option This will decide how the Customer Invoice will be handled.
+     *      Set any of below mentioned Invoice Options for your Customer:
+     *      - NoInvoice This will not raise any Invoice. The Order will be executed.
+     *      - PayInvoice This will raise an invoice and if there are sufficient funds in
+     *          the customer's account the invoice will be paid and the order will be executed,
+     *          else the order will remain pending in the system
+     *      - KeepInvoice This will raise an Invoice for the Customer to pay later. The Order will be executed.
+     *      - OnlyAdd This will raise an invoice for the Customer to pay later. The transfer action request will remain pending.
+     */
+    /*public function purchasePrivacyProtection(array $vars)
+    {
+        return $this->api->submit('domains/purchase-privacy', $vars);
+    }*/
+
     /**
      * Changes the Privacy Protection status of the specified Domain Registration Order.
      *
@@ -499,5 +527,41 @@ class LogicboxesDomains
     public function restore(array $vars)
     {
         return $this->api->submit('domains/restore', $vars);
+    }
+
+    /**
+     * Adds a Delegation Signer (DS) Record for a Domain Registration Order.
+     * 
+     * @param array $vars An array of input params including:
+     *  - order-id Order ID associated with the domain name for which you want to add the DS record
+     *  - attr-name Mapping key of the details needed to add a DS Record. Refer the description of attr-value.
+     *  - attr-value Mapping value of the details needed to add a DS Record. This together with attr-name shall contain the details.
+     *      - To add a DS Record for a Domain Registration Order:
+     *          - keytag: Contains the tag value of the DNSKEY Resource Record that validates this signature. An integer value in the range 0 to 65536.
+     *          - algorithm: The cryptographic algorithm that is used to generate the signature. An integer value in the range 0 to 255.
+     *          - digesttype: The algorithm type used to construct the Digest. Applicable values are 1, 2 & 3 for .COM / .NET and 1 & 2 for other domain name extensions.
+     *          - digest: An alpha-numeric string generated by applying the Digest Type algorithm to a message. It needs to be a 40-character string for Digest Type value 1 and a 64-character string for Digest Type values 2 and 3.
+     */
+    public function addDsRecord(array $vars) 
+    {
+        return $this->api->submit('domains/add-dnssec', $vars);
+    }
+    
+    /**
+     * Deletes a Delegation Signer (DS) Record for a Domain Registration Order.
+     * 
+     * @param array $vars An array of input params including:
+     *  - order-id Order ID associated with the domain name for which you want to delete the DS record
+     *  - attr-name Mapping key of the details associated with a DS Record. Refer the description of attr-value.
+     *  - attr-value Mapping value of the details associated with a DS Record. This together with attr-name shall contain the details.
+     *      - To delete a DS Record associated with a Domain Registration Order:
+     *          - keytag: Key Tag value associated with the DS Record
+     *          - algorithm: Algorithm associated with the DS Record
+     *          - digesttype: Digest Type associated with the DS Record. Applicable values are 1, 2 & 3 for .COM / .NET and 1 & 2 for other domain name extensions.
+     *          - digest: Digest associated with the DS Record - a 40-character string for Digest Type value 1 and a 64-character string for Digest Type values 2 and 3
+     */
+    public function deleteDsRecord(array $vars) 
+    {
+        return $this->api->submit('domains/del-dnssec', $vars);
     }
 }

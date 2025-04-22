@@ -505,3 +505,13 @@ Thank you for your business!',
     ]
 ]);
 
+// DNS Record Types
+Configure::set('Logicboxes.dns_record_types', [
+    'NS' => 'NS',
+    'A' => 'A',
+    'AAAA' => 'AAAA',
+    'MX' => 'MX',
+    'CNAME' => 'CNAME',
+    'TXT' => 'TXT',
+    'SRV' => 'SRV',
+]);

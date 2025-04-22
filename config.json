@@ -24,5 +24,9 @@
         "module": [],
         "package": [],
         "service": ["domain"]
+    },
+    "features": {
+        "dns_management": 1,
+        "id_protection": 1
     }
 }

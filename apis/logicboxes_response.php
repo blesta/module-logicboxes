@@ -63,7 +63,7 @@ class LogicboxesResponse
         if (isset($this->response->status) && strtolower($this->response->status) == 'error') {
             return $this->response;
         } elseif (isset($this->response->status) && strtolower($this->response->status) == 'failed') {
-            return (object)['message' => $this->response->actionstatusdesc];
+            return (object)['message' => $this->response->actionstatusdesc ?? $this->response->msg ?? 'Unknown'];
         }
         return false;
     }
