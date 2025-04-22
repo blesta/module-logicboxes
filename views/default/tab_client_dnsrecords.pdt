@@ -22,13 +22,13 @@
                 <tbody>
                     <?php foreach ($records as $record) { ?>
                         <tr>
-                            <td><?= $this->Html->safe($record->type ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->host ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->value ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->timetolive ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->priority ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->port ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->weight ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->type ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->host ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->value ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->timetolive ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->priority ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->port ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->weight ?? null) ?></td>
                             <td>
                                 <?php
                                     $this->Form->create();

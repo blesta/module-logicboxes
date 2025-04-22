@@ -21,10 +21,10 @@
                 <tbody>
                     <?php foreach ($records as $record) { ?>
                         <tr>
-                            <td><?= $this->Html->safe($record->keytag ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->algorithm ?? null) ?></td>
-                            <td><?= $this->Html->safe($record->digesttype ?? null) ?></td>
-                            <td style="word-wrap:break-word; overflow-wrap: break-word; word-break: break-word;"><?= $this->Html->safe($record->digest ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->keytag ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->algorithm ?? null) ?></td>
+                            <td><?php echo $this->Html->safe($record->digesttype ?? null) ?></td>
+                            <td style="word-wrap:break-word; overflow-wrap: break-word; word-break: break-word;"><?php echo $this->Html->safe($record->digest ?? null) ?></td>
                             <td>
                                 <?php
                                     $this->Form->create();
