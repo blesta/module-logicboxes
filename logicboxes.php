@@ -346,8 +346,6 @@ class Logicboxes extends RegistrarModule
                 // and if the domain is eligible for privacy
                 $vars['protect-privacy'] = 'false';
                 if (isset($vars['configoptions']['id_protection'])) {
-                    // && !in_array($tld, Configure::get('Logicboxes.no_privacy_tlds'))) { // TODO: Error to the user that privacy isn't supported for the TLD?
-                    //$vars['purchase-privacy'] = 'true'; // TODO: Doesn't seem to be required or do anything, investigate
                     $vars['protect-privacy'] = 'true';
                 }
 
@@ -1590,7 +1588,6 @@ class Logicboxes extends RegistrarModule
         }
 
         // Fetch records
-        // TODO: If above request fails, DNS records do not load - Investigate
         $records = $this->getDomainRecords($api, $fields->domain); 
 
         $this->view = new View($view, 'default');
@@ -1614,6 +1611,11 @@ class Logicboxes extends RegistrarModule
      */
     private function getDomainRecords(LogicboxesApi $api, $domain)
     {
+        // If there are errors from previous requests, ignore them while doing requests now
+        if ($old_errors = $this->Input->errors()) {
+            $this->Input->setErrors([]);
+        }
+
         $api->loadCommand('logicboxes_dns_manage');
         $dns = new LogicboxesDnsManage($api);
 
@@ -1631,7 +1633,9 @@ class Logicboxes extends RegistrarModule
                 ]);
                 $this->processResponse($api, $request);
 
-                if ($this->Input->errors()) {
+                if ($errors = $this->Input->errors()) {
+                    $old_errors = array_merge($old_errors ? $old_errors : [], $errors);
+                    $this->Input->setErrors([]);
                     break;
                 }
 
@@ -1648,6 +1652,10 @@ class Logicboxes extends RegistrarModule
             } while ($page <= 10 && count($type_records) < $response->recsindb);
 
             $records = array_merge($records, $type_records);
+        }
+
+        if ($old_errors) {
+            $this->Input->setErrors($old_errors);
         }
 
         return $records;
