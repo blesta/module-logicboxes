@@ -286,7 +286,7 @@ class LogicboxesDnsManage
      */
     public function searchRecords(array $vars)
     {
-        return $this->api->submit('dns/manage/search-records', $vars);
+        return $this->api->submit('dns/manage/search-records', $vars, 'GET');
     }
 
     /**
