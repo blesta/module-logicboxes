@@ -44,7 +44,7 @@ class LogicboxesForwarder
      */
     public function details(array $vars)
     {
-        return $this->api->submit('domainforward/details', $vars);
+        return $this->api->submit('domainforward/details', $vars, 'GET');
     }
 
     /**

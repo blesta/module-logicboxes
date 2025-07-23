@@ -141,7 +141,7 @@ class Logicboxes extends RegistrarModule
             return false;
         }
         
-        $response = $domains->modifyNs(['order-id' => $id_response->response(), 'ns' => $ns]);
+        $response = $domains->modifyNs(['order-id' => $id_response->response(), 'ns' => $nameservers]);
         $this->processResponse($api, $response);
         
         return ($response->status() == 'OK');
@@ -1248,7 +1248,7 @@ class Logicboxes extends RegistrarModule
 
         $package = $this->Packages->get($service->package_id ?? $service->package->id);
 
-        if ($package->meta->type == 'domain') {
+        if (($package->meta->type ?? 'domain') == 'domain') {
             $tabs =  [
                 'tabClientWhois' => [
                     'name' => Language::_('Logicboxes.tab_whois.title', true),
@@ -2184,11 +2184,11 @@ class Logicboxes extends RegistrarModule
 
                 if ($response) {
                     $vars->registrar_lock = 'false';
-                    if (in_array('transferlock', $response->orderstatus)) {
+                    if (in_array('transferlock', ($response->orderstatus ?? []))) {
                         $vars->registrar_lock = 'true';
                     }
 
-                    $vars->epp_code = $response->domsecret;
+                    $vars->epp_code = ($response->domsecret ?? '');
                 }
             }
         } else {
