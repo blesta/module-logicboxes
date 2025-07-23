@@ -63,11 +63,32 @@ $lang['Logicboxes.tab_whois.section_techcontact'] = 'Technical';
 $lang['Logicboxes.tab_whois.section_billingcontact'] = 'Billing';
 $lang['Logicboxes.tab_whois.field_submit'] = 'Update Whois';
 
+$lang['Logicboxes.tab_forwarder.title'] = 'Domain Forwarding';
+$lang['Logicboxes.tab_forwarder.forward_to'] = 'Forward To';
+$lang['Logicboxes.tab_forwarder.url_masking'] = 'URL Masking';
+$lang['Logicboxes.tab_forwarder.meta_tags'] = 'Meta Tags';
+$lang['Logicboxes.tab_forwarder.noframes'] = 'Noframes';
+$lang['Logicboxes.tab_forwarder.sub_domain_forwarding'] = 'Subdomain Forwarding';
+$lang['Logicboxes.tab_forwarder.path_forwarding'] = 'Path Forwarding';
+$lang['Logicboxes.tab_forwarder.modify'] = 'Save';
+$lang['Logicboxes.tab_forwarder.disable'] = 'Disable';
+$lang['Logicboxes.tab_forwarder.activate'] = 'Activate';
+
 $lang['Logicboxes.managewhois.contact_transfer'] = 'A new contact has been created with the given details and the process of transfering the domain to this contact has begun.  This action must be confirmed by both the current contact and new one before taking effect.';
 
 $lang['Logicboxes.tab_nameservers.title'] = 'Name Servers';
 $lang['Logicboxes.tab_nameserver.field_ns'] = 'Name Server %1$s'; // %1$s is the name server number
 $lang['Logicboxes.tab_nameservers.field_submit'] = 'Update Name Servers';
+
+$lang['Logicboxes.tab_childnameservers.title'] = 'Child Name Servers';
+$lang['Logicboxes.tab_childnameservers.help_text'] = 'Child Name Servers are Name Servers which are registered under your Domain Name. Once registered, you can use these Child Name Servers in turn as Name Servers for other Domain Names.';
+$lang['Logicboxes.tab_childnameservers.cns'] = 'Host Name';
+$lang['Logicboxes.tab_childnameservers.ip'] = 'IP Address';
+$lang['Logicboxes.tab_childnameservers.actions'] = 'Actions';
+$lang['Logicboxes.tab_childnameservers.action_modify'] = 'Modify';
+$lang['Logicboxes.tab_childnameservers.action_delete'] = 'Delete';
+$lang['Logicboxes.tab_childnameservers.action_add'] = 'Add';
+$lang['Logicboxes.tab_childnameservers.no_records'] = 'No Child Name Servers have been created for this domain.';
 
 $lang['Logicboxes.tab_email_forwarding.title'] = 'Email Forwarding';
 $lang['Logicboxes.tab_email_forwarding.desc'] = 'Email forwarding is automatically directing email sent from one address to a different email address. For example, if you had an existing email address of email@email.com, and then registered the domain newdomain.com, you could use email forward to direct sales@newdomain.com to your existing email@email.com email address.';;

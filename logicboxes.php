@@ -346,8 +346,6 @@ class Logicboxes extends RegistrarModule
                 // and if the domain is eligible for privacy
                 $vars['protect-privacy'] = 'false';
                 if (isset($vars['configoptions']['id_protection'])) {
-                    // && !in_array($tld, Configure::get('Logicboxes.no_privacy_tlds'))) { // TODO: Error to the user that privacy isn't supported for the TLD?
-                    //$vars['purchase-privacy'] = 'true'; // TODO: Doesn't seem to be required or do anything, investigate
                     $vars['protect-privacy'] = 'true';
                 }
 
@@ -1210,7 +1208,9 @@ class Logicboxes extends RegistrarModule
         if ($package->meta->type == 'domain') {
             $tabs = [
                 'tabWhois' => Language::_('Logicboxes.tab_whois.title', true),
+                'tabForwarder' => Language::_('Logicboxes.tab_forwarder.title', true),
                 'tabNameservers' => Language::_('Logicboxes.tab_nameservers.title', true),
+                'tabChildNameservers' => Language::_('Logicboxes.tab_childnameservers.title', true),
                 'tabDnssec' => Language::_('Logicboxes.tab_dnssec.title', true),
                 'tabDnsRecords' => Language::_('Logicboxes.tab_dnsrecord.title', true),
                 'tabSettings' => Language::_('Logicboxes.tab_settings.title', true)
@@ -1254,9 +1254,17 @@ class Logicboxes extends RegistrarModule
                     'name' => Language::_('Logicboxes.tab_whois.title', true),
                     'icon' => 'fas fa-users'
                 ],
+                'tabClientForwarder' => [
+                    'name' => Language::_('Logicboxes.tab_forwarder.title', true),
+                    'icon' => 'fas fa-reply'
+                ],
                 'tabClientNameservers' => [
                     'name' => Language::_('Logicboxes.tab_nameservers.title', true),
                     'icon' => 'fas fa-server'
+                ],
+                'tabClientChildNameservers' => [
+                    'name' => Language::_('Logicboxes.tab_childnameservers.title', true),
+                    'icon' => 'fas fa-clone' 
                 ],
                 'tabClientDnssec' => [
                     'name' => Language::_('Logicboxes.tab_dnssec.title', true),
@@ -1316,6 +1324,36 @@ class Logicboxes extends RegistrarModule
     }
 
     /**
+     * Admin Forwarder tab
+     * 
+     * @param stdClass $package A stdClass object representing the current package
+     * @param stdClass $service A stdClass object representing the current service
+     * @param array $get Any GET parameters
+     * @param array $post Any POST parameters
+     * @param array $files Any FILES parameters
+     * @return string The string representing the contents of this tab
+     */
+    public function tabForwarder($package, $service, array $get = null, array $post = null, array $files = null)
+    {
+        return $this->manageForwarder('tab_forwarder', $package, $service, $get, $post, $files);
+    }
+
+    /**
+     * Client Forwarder tab
+     * 
+     * @param stdClass $package A stdClass object representing the current package
+     * @param stdClass $service A stdClass object representing the current service
+     * @param array $get Any GET parameters
+     * @param array $post Any POST parameters
+     * @param array $files Any FILES parameters
+     * @return string The string representing the contents of this tab
+     */
+    public function tabClientForwarder($package, $service, array $get = null, array $post = null, array $files = null)
+    {
+        return $this->manageForwarder('tab_client_forwarder', $package, $service, $get, $post, $files);
+    }
+
+    /**
      * Admin Nameservers tab
      *
      * @param stdClass $package A stdClass object representing the current package
@@ -1331,7 +1369,7 @@ class Logicboxes extends RegistrarModule
     }
 
     /**
-     * Admin Nameservers tab
+     * Client Nameservers tab
      *
      * @param stdClass $package A stdClass object representing the current package
      * @param stdClass $service A stdClass object representing the current service
@@ -1343,6 +1381,36 @@ class Logicboxes extends RegistrarModule
     public function tabClientNameservers($package, $service, array $get = null, array $post = null, array $files = null)
     {
         return $this->manageNameservers('tab_client_nameservers', $package, $service, $get, $post, $files);
+    }
+
+    /**
+     * Admin Child Nameservers tab
+     * 
+     * @param stdClass $package A stdClass object representing the current package
+     * @param stdClass $service A stdClass object representing the current service
+     * @param array $get Any GET parameters
+     * @param array $post Any POST parameters
+     * @param array $files Any FILES parameters
+     * @return string The string representing the contents of this tab
+     */
+    public function tabChildNameservers($package, $service, array $get = null, array $post = null, array $files = null)
+    {
+        return $this->manageChildNameservers('tab_childnameservers', $package, $service, $get, $post, $files);
+    }
+
+    /**
+     * Client Child Nameservers tab
+     * 
+     * @param stdClass $package A stdClass object representing the current package
+     * @param stdClass $service A stdClass object representing the current service
+     * @param array $get Any GET parameters
+     * @param array $post Any POST parameters
+     * @param array $files Any FILES parameters
+     * @return string The string representing the contents of this tab
+     */
+    public function tabClientChildNameservers($package, $service, array $get = null, array $post = null, array $files = null)
+    {
+        return $this->manageChildNameservers('tab_client_childnameservers', $package, $service, $get, $post, $files);
     }
 
     /**
@@ -1376,119 +1444,6 @@ class Logicboxes extends RegistrarModule
     }
 
     /**
-     * Handle updating host information
-     *
-     * @param string $view The name of the view to fetch
-     * @param stdClass $package An stdClass object representing the package
-     * @param stdClass $service An stdClass object representing the service
-     * @param array $get Any GET arguments (optional)
-     * @param array $post Any POST arguments (optional)
-     * @param array $files Any FILES data (optional)
-     * @return string The rendered view
-     */
-    private function manageDnssec($view, $package, $service, array $get = null, array $post = null, array $files = null)
-    {
-        $row = $this->getModuleRow($package->module_row);
-        $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
-        $api->loadCommand('logicboxes_domains');
-        $domains = new LogicboxesDomains($api);
-
-        $vars = new stdClass();
-
-        $fields = $this->serviceFieldsToObject($service->fields);
-
-        // Perform DNSSEC record management
-        if (!empty($post)) {
-            if (isset($post['action'])) {
-                $params = [
-                    'order-id' => $fields->{'order-id'},
-                    'attr-name1' => 'keytag',
-                    'attr-name2' => 'algorithm',
-                    'attr-name3' => 'digesttype',
-                    'attr-name4' => 'digest',
-                    'attr-value1' => $post['keytag'] ?? null,
-                    'attr-value2' => $post['algorithm'] ?? null,
-                    'attr-value3' => $post['digesttype'] ?? null,
-                    'attr-value4' => $post['digest'] ?? null,
-                ];
-
-                switch ($post['action']) {
-                    case 'addDsRecord':
-                        $response = $domains->addDsRecord($params);
-                        $this->processResponse($api, $response);
-                        break;
-                    case 'deleteDsRecord':
-                        $response = $domains->deleteDsRecord($params);
-                        $this->processResponse($api, $response);
-                        break;
-                }
-            }
-        }
-
-        // Fetch the records
-        $dnsec_response = $domains->details([
-            'order-id' => $fields->{'order-id'},
-            'options' => ['DNSSECDetails']
-        ]);
-        $this->processResponse($api, $dnsec_response);
-        $records = $dnsec_response->response()->dnssec ?? [];
-
-        $this->view = new View($view, 'default');
-
-        // Load the helpers requires for this view
-        Loader::loadHelpers($this, ['Form', 'Html']);
-
-        $this->view->set('vars', $vars);
-        $this->view->set('records', $records);
-        $this->view->set('digests', $this->getSelectDnssecDigests());
-        $this->view->set('algorithms', $this->getSelectDnssecAlgorithms());
-        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
-        return $this->view->fetch();
-    }
-
-    /**
-     * Returns an array of DNNSEC digests for use in selects
-     * 
-     * @return array An array of DNSSEC digests
-     */
-    private function getSelectDnssecDigests()
-    {
-        return [
-            '' => Language::_('AppController.select.please', true),
-            '1' => 'SHA-1 (1)',
-            '2' => 'SHA-256 (2)',
-            '3' => 'GOST R 34.11-94 (3)' 
-        ];
-    }
-
-    /**
-     * Returns an array of DNSSEC algorithms for use in selects
-     * 
-     * @return array An array of DNSSEC algorithms
-     */
-    private function getSelectDnssecAlgorithms()
-    {
-        return [
-            '' => Language::_('AppController.select.please', true),
-            '1' => 'RSA/MD5 (1)',
-            '2' => 'Diffie-Hellman (2)',
-            '3' => 'DSA/SHA-1 (3)',
-            '4' => 'Elliptic Curve (4)',
-            '5' => 'RSA/SHA-1 (5)',
-            '6' => 'DSA-NSEC3-SHA1 (6)',
-            '7' => 'RSASHA1-NSEC3-SHA1 (7)',
-            '8' => 'RSA/SHA-256 (8)',
-            '10' => 'RSA/SHA-512 (10)',
-            '12' => 'ECC-GOST (12)',
-            '13' => 'ECDSA Curve P-256 with SHA-256 (13)',
-            '14' => 'ECDSA Curve P-384 with SHA-384 (14)',
-            '252' => 'Indirect (252)',
-            '253' => 'Private DNS (253)',
-            '254' => 'Private OID (254)'
-        ];
-    }
-
-    /**
      * Admin DNS Records tab
      *
      * @param stdClass $package A stdClass object representing the current package
@@ -1516,141 +1471,6 @@ class Logicboxes extends RegistrarModule
     public function tabClientDnsRecords($package, $service, array $get = null, array $post = null, array $files = null)
     {
         return $this->manageDnsRecords('tab_client_dnsrecords', $package, $service, $get, $post, $files);
-    }
-
-    /**
-     * Handle updating DNS Record information
-     *
-     * @param string $view The name of the view to fetch
-     * @param stdClass $package An stdClass object representing the package
-     * @param stdClass $service An stdClass object representing the service
-     * @param array $get Any GET arguments (optional)
-     * @param array $post Any POST arguments (optional)
-     * @param array $files Any FILES data (optional)
-     * @return string The rendered view
-     */
-    private function manageDnsRecords(
-        $view,
-        $package,
-        $service,
-        array $get = null,
-        array $post = null,
-        array $files = null
-    ) {
-        $row = $this->getModuleRow($package->module_row);
-        $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
-        $api->loadCommand('logicboxes_domains');
-        $domains = new LogicboxesDomains($api);
-        $api->loadCommand('logicboxes_dns_manage');
-        $dns = new LogicboxesDnsManage($api);
-
-        $vars = new stdClass();
-        
-        $fields = $this->serviceFieldsToObject($service->fields);
-
-        // Perform record management
-        if (!empty($post)) {
-            if (isset($post['action']) && isset($post['type']) && in_array($post['type'], Configure::get('Logicboxes.dns_record_types'))) {
-                $params = [
-                    'domain-name' => $fields->domain,
-                    'host' => $post['host'] ?? null,
-                    'value' => $post['value'] ?? null,
-                    'ttl' => $post['ttl'] ?? null
-                ];
-
-                if ($post['type'] == 'MX' || $post['type'] == 'SRV') {
-                    $params['priority'] = $post['priority'] ?? null;
-                }
-
-                if ($post['type'] == 'SRV') {
-                    $params['port'] = $post['port'] ?? null;
-                    $params['weight'] = $post['weight'] ?? null;
-                }
-
-                $functionType = $post['type'];
-                if ($functionType == 'A') {
-                    $functionType = 'Ipv4';
-                } else if ($functionType == 'AAAA') {
-                    $functionType = 'Ipv6';
-                } else {
-                    $functionType = ucfirst($functionType);
-                }
-
-                switch ($post['action']) {
-                    case 'deleteDnsRecord':
-                        $response = call_user_func([$dns, 'delete' . $functionType . 'Record'], $params);
-                        $this->processResponse($api, $response);
-                        break;
-                    case 'addDnsRecord':
-                        $response = call_user_func([$dns, 'add' . $functionType . 'Record'], $params);
-                        $this->processResponse($api, $response);
-                        break;
-                }
-            }
-        }
-
-        // Fetch records
-        // TODO: If above request fails, DNS records do not load - Investigate
-        $records = $this->getDomainRecords($api, $fields->domain); 
-
-        $this->view = new View($view, 'default');
-
-        // Load the helpers required for this view
-        Loader::loadHelpers($this, ['Form', 'Html']);
-
-        $this->view->set('vars', $vars);
-        $this->view->set('records', $records);
-        $this->view->set('types', Configure::get('Logicboxes.dns_record_types'));
-        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
-        return $this->view->fetch();
-    }
-
-    /**
-     * Fetches the domain records for the given domain
-     * 
-     * @param LogicboxesApi $api The API instance
-     * @param string $domain The domain to fetch records for
-     * @return array An array of domain records
-     */
-    private function getDomainRecords(LogicboxesApi $api, $domain)
-    {
-        $api->loadCommand('logicboxes_dns_manage');
-        $dns = new LogicboxesDnsManage($api);
-
-        $records = [];
-        foreach (Configure::get('Logicboxes.dns_record_types') as $type) {
-            $page = 0;
-            $type_records = [];
-
-            do {
-                $request = $dns->searchRecords([
-                    'domain-name' => $domain,
-                    'type' => $type,
-                    'no-of-records' => 50,
-                    'page-no' => ++$page
-                ]);
-                $this->processResponse($api, $request);
-
-                if ($this->Input->errors()) {
-                    break;
-                }
-
-                $response = $request->response();
-                if (($response->recsonpage ?? null) == 0) {
-                    break;
-                }
-
-                foreach ($response as $key => $value) {
-                    if (filter_var($key, FILTER_VALIDATE_INT)) {
-                        $type_records[] = $value;
-                    }
-                }
-            } while ($page <= 10 && count($type_records) < $response->recsindb);
-
-            $records = array_merge($records, $type_records);
-        }
-
-        return $records;
     }
 
     /**
@@ -1694,8 +1514,14 @@ class Logicboxes extends RegistrarModule
      * @param array $files Any FILES parameters
      * @return string The string representing the contents of this tab
      */
-    private function manageWhois($view, $package, $service, array $get = null, array $post = null, array $files = null)
-    {
+    private function manageWhois(
+        $view, 
+        $package, 
+        $service, 
+        array $get = null, 
+        array $post = null, 
+        array $files = null
+    ) {
         $row = $this->getModuleRow($package->module_row);
         $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
         $api->loadCommand('logicboxes_domains');
@@ -1863,6 +1689,84 @@ class Logicboxes extends RegistrarModule
     }
 
     /**
+     * Handle updating domain forwarder information
+     * 
+     * @param string $view The view to use
+     * @param stdClass $package A stdClass object representing the current package
+     * @param stdClass $service A stdClass object representing the current service
+     * @param array $get Any GET parameters
+     * @param array $post Any POST parameters
+     * @param array $files Any FILES parameters
+     * @return string The string representing the contents of this tab
+     */
+    private function manageForwarder(
+        $view, 
+        $package, 
+        $service, 
+        array $get = null, 
+        array $post = null, 
+        array $files = null
+    ) {
+        $row = $this->getModuleRow($package->module_row);
+        $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
+        $api->loadCommand('logicboxes_forwarder');
+        $forwarder = new LogicboxesForwarder($api);
+
+        $fields = $this->serviceFieldsToObject($service->fields);
+        $show_content = true;
+
+        if (property_exists($fields, 'order-id')) {
+            if (!empty($post) && isset($post['action'])) {
+                $params = [
+                    'order-id' => $fields->{'order-id'},
+                    'forward-to' => $post['forward_to'] ?? null,
+                    'url-masking' => isset($post['url_masking']) ? 'true' : 'false',
+                    'meta-tags' => $post['meta_tags'] ?? null,
+                    'noframes' => $post['noframes'] ?? null,
+                    'sub-domain-forwarding' => isset($post['sub_domain_forwarding']) ? 'true' : 'false',
+                    'path-forwarding' => isset($post['path_forwarding']) ? 'true' : 'false'
+                ];
+
+                switch ($post['action']) {
+                    case 'activate':
+                        $response = $forwarder->activate(['order-id' => $fields->{'order-id'}]);
+                        $this->processResponse($api, $response);
+                        if ($errors = $this->Input->errors()) {
+                            break;
+                        }
+
+                        // Continue to modify 
+                    case 'modify':
+                        $response = $forwarder->manage($params);
+                        $this->processResponse($api, $response);                        
+                        break;
+                    case 'disable':
+                        $response = $forwarder->disable(['domain-name' => $fields->{'domain'}]);
+                        $this->processResponse($api, $response);
+                        break;
+                }
+            }
+
+            $response = $forwarder->details(['order-id' => $fields->{'order-id'}]);
+            $this->processResponse($api, $response);
+            $details = (array)$response->response() ?? [];
+        } else {
+            // No order-id; info is not available
+            $show_content = false;
+        }
+
+        $view = ($show_content ? $view : 'tab_unavailable');
+        $this->view = new View($view, 'default');
+
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html']);
+
+        $this->view->set('details', $details ?? []);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
+        return $this->view->fetch();
+    }
+
+    /**
      * Handle updating nameserver information
      *
      * @param string $view The view to use
@@ -1930,6 +1834,299 @@ class Logicboxes extends RegistrarModule
         Loader::loadHelpers($this, ['Form', 'Html']);
 
         $this->view->set('vars', $vars);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
+        return $this->view->fetch();
+    }
+
+    /**
+     * Handle updating domain forwarder information
+     * 
+     * @param string $view The view to use
+     * @param stdClass $package A stdClass object representing the current package
+     * @param stdClass $service A stdClass object representing the current service
+     * @param array $get Any GET parameters
+     * @param array $post Any POST parameters
+     * @param array $files Any FILES parameters
+     * @return string The string representing the contents of this tab
+     */
+    private function manageChildNameservers(
+        $view, 
+        $package, 
+        $service, 
+        array $get = null, 
+        array $post = null, 
+        array $files = null
+    ) {
+        $vars = new stdClass();
+
+        $row = $this->getModuleRow($package->module_row);
+        $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
+        $api->loadCommand('logicboxes_domains');
+        $domains = new LogicboxesDomains($api);
+
+        $fields = $this->serviceFieldsToObject($service->fields);
+        $show_content = true;
+
+        if (property_exists($fields, 'order-id')) {
+            if (!empty($post) && isset($post['action'])) {
+                $params = [
+                    'order-id' => $fields->{'order-id'},
+                    'cns' => $post['cns'] ?? null,
+                    'ip' => explode(',', $post['ip']) ?? null
+                ];
+
+                switch ($post['action']) {
+                    case 'deleteCns':
+                        $response = $domains->deleteCnsIp($params);
+                        $this->processResponse($api, $response);
+                        break;
+                    case 'modifyCns':
+                        $old_errors = false;
+
+                        if ($params['cns'] != $post['old-cns'] ?? null) {
+                            $params['old-cns'] = $post['old-cns'] ?? null;
+                            $params['new-cns'] = $params['cns'];
+                            unset($params['cns']);
+
+                            $response = $domains->modifyCnsName($params);
+                            $this->processResponse($api, $response);
+
+                            if ($errors = $this->Input->errors()) {
+                                $old_errors = array_merge($old_errors ? $old_errors : [], $errors);
+                                $this->Input->setErrors([]);
+                            }
+                        }
+                        
+                        if ($params['ip'] != $post['old-ip'] ?? null) {
+                            $params['old-ip'] = $post['old-ip'] ?? null;
+                            $params['new-ip'] = $params['ip'];
+                            unset($params['ip']);
+
+                            $response = $domains->modifyCnsIp($params);
+                            $this->processResponse($api, $response);
+        
+                            if ($errors = $this->Input->errors()) {
+                                $old_errors = array_merge($old_errors ? $old_errors : [], $errors);
+                                $this->Input->setErrors([]);
+                            }
+                        }
+                        break;
+                    case 'addCns':
+                        $response = $domains->addCns($params);
+                        $this->processResponse($api, $response);
+                        break;
+                }
+            }
+
+            $response = $domains->details(['order-id' => $fields->{'order-id'}, 'options' => 'All']);
+            $this->processResponse($api, $response);
+            $cns = $response->response()->cns ?? null;
+
+            if ($errors = $this->Input->errors() && ($old_errors ?? false)) {
+                $total_errors = array_merge($old_errors ? $old_errors : [], $errors);
+                $this->Input->setErrors($total_errors);
+            }
+
+            if (isset($cns)) {
+                $indexed_cns = [];
+                foreach ((array)$cns as $cns => $ip) {
+                    $indexed_cns[] = [
+                        'cns' => $cns,
+                        'ip' => $ip
+                    ];
+                }
+                $cns = $indexed_cns;
+            }
+        } else {
+            // No order-id; info is not available
+            $show_content = false;
+        }
+
+        $view = ($show_content ? $view : 'tab_unavailable');
+        $this->view = new View($view, 'default');
+
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html']);
+
+        $this->view->set('vars', $vars);
+        $this->view->set('cns', $cns ?? []);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
+        return $this->view->fetch();
+    }
+
+    /**
+     * Handle updating host information
+     *
+     * @param string $view The name of the view to fetch
+     * @param stdClass $package An stdClass object representing the package
+     * @param stdClass $service An stdClass object representing the service
+     * @param array $get Any GET arguments (optional)
+     * @param array $post Any POST arguments (optional)
+     * @param array $files Any FILES data (optional)
+     * @return string The rendered view
+     */
+    private function manageDnssec(
+        $view,
+        $package, 
+        $service, 
+        array $get = null, 
+        array $post = null, 
+        array $files = null
+    ) {
+        $row = $this->getModuleRow($package->module_row);
+        $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
+        $api->loadCommand('logicboxes_domains');
+        $domains = new LogicboxesDomains($api);
+
+        $vars = new stdClass();
+
+        $fields = $this->serviceFieldsToObject($service->fields);
+        $show_content = true;
+        
+        if (property_exists($fields, 'order-id')) {
+            // Perform DNSSEC record management
+            if (!empty($post)) {
+                if (isset($post['action'])) {
+                    $params = [
+                        'order-id' => $fields->{'order-id'},
+                        'attr-name1' => 'keytag',
+                        'attr-name2' => 'algorithm',
+                        'attr-name3' => 'digesttype',
+                        'attr-name4' => 'digest',
+                        'attr-value1' => $post['keytag'] ?? null,
+                        'attr-value2' => $post['algorithm'] ?? null,
+                        'attr-value3' => $post['digesttype'] ?? null,
+                        'attr-value4' => $post['digest'] ?? null,
+                    ];
+    
+                    switch ($post['action']) {
+                        case 'addDsRecord':
+                            $response = $domains->addDsRecord($params);
+                            $this->processResponse($api, $response);
+                            break;
+                        case 'deleteDsRecord':
+                            $response = $domains->deleteDsRecord($params);
+                            $this->processResponse($api, $response);
+                            break;
+                    }
+                }
+            }
+    
+            // Fetch the records
+            $dnsec_response = $domains->details([
+                'order-id' => $fields->{'order-id'},
+                'options' => ['DNSSECDetails']
+            ]);
+            $this->processResponse($api, $dnsec_response);
+            $records = $dnsec_response->response()->dnssec ?? [];
+        } else {
+            // No order-id; info is not available
+            $show_content = false;
+        }
+
+        $view = ($show_content ? $view : 'tab_unavailable');
+        $this->view = new View($view, 'default');
+
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html']);
+
+        $this->view->set('vars', $vars);
+        $this->view->set('records', $records ?? null);
+        $this->view->set('digests', $this->getSelectDnssecDigests());
+        $this->view->set('algorithms', $this->getSelectDnssecAlgorithms());
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
+        return $this->view->fetch();
+    }
+
+    /**
+     * Handle updating DNS Record information
+     *
+     * @param string $view The name of the view to fetch
+     * @param stdClass $package An stdClass object representing the package
+     * @param stdClass $service An stdClass object representing the service
+     * @param array $get Any GET arguments (optional)
+     * @param array $post Any POST arguments (optional)
+     * @param array $files Any FILES data (optional)
+     * @return string The rendered view
+     */
+    private function manageDnsRecords(
+        $view,
+        $package,
+        $service,
+        array $get = null,
+        array $post = null,
+        array $files = null
+    ) {
+        $row = $this->getModuleRow($package->module_row);
+        $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
+        $api->loadCommand('logicboxes_domains');
+        $domains = new LogicboxesDomains($api);
+        $api->loadCommand('logicboxes_dns_manage');
+        $dns = new LogicboxesDnsManage($api);
+
+        $vars = new stdClass();
+        
+        $fields = $this->serviceFieldsToObject($service->fields);
+        $show_content = true;
+
+        if (property_exists($fields, 'order-id')) {
+            // Perform record management
+            if (!empty($post)) {
+                if (isset($post['action']) && isset($post['type']) && in_array($post['type'], Configure::get('Logicboxes.dns_record_types'))) {
+                    $params = [
+                        'domain-name' => $fields->domain,
+                        'host' => $post['host'] ?? null,
+                        'value' => $post['value'] ?? null,
+                        'ttl' => $post['ttl'] ?? null
+                    ];
+
+                    if ($post['type'] == 'MX' || $post['type'] == 'SRV') {
+                        $params['priority'] = $post['priority'] ?? null;
+                    }
+
+                    if ($post['type'] == 'SRV') {
+                        $params['port'] = $post['port'] ?? null;
+                        $params['weight'] = $post['weight'] ?? null;
+                    }
+
+                    $functionType = $post['type'];
+                    if ($functionType == 'A') {
+                        $functionType = 'Ipv4';
+                    } else if ($functionType == 'AAAA') {
+                        $functionType = 'Ipv6';
+                    } else {
+                        $functionType = ucfirst($functionType);
+                    }
+
+                    switch ($post['action']) {
+                        case 'deleteDnsRecord':
+                            $response = call_user_func([$dns, 'delete' . $functionType . 'Record'], $params);
+                            $this->processResponse($api, $response);
+                            break;
+                        case 'addDnsRecord':
+                            $response = call_user_func([$dns, 'add' . $functionType . 'Record'], $params);
+                            $this->processResponse($api, $response);
+                            break;
+                    }
+                }
+            }
+
+            // Fetch records
+            $records = $this->getDomainRecords($api, $fields->domain); 
+        } else {
+            // No order-id; info is not available
+            $show_content = false;
+        }
+
+        $view = ($show_content ? $view : 'tab_unavailable');
+        $this->view = new View($view, 'default');
+
+        // Load the helpers required for this view
+        Loader::loadHelpers($this, ['Form', 'Html']);
+
+        $this->view->set('vars', $vars);
+        $this->view->set('records', $records ?? null);
+        $this->view->set('types', Configure::get('Logicboxes.dns_record_types'));
         $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
         return $this->view->fetch();
     }
@@ -2708,5 +2905,106 @@ class Logicboxes extends RegistrarModule
         }
 
         return false;
+    }
+
+    /**
+     * Returns an array of DNNSEC digests for use in selects
+     * 
+     * @return array An array of DNSSEC digests
+     */
+    private function getSelectDnssecDigests()
+    {
+        return [
+            '' => Language::_('AppController.select.please', true),
+            '1' => 'SHA-1 (1)',
+            '2' => 'SHA-256 (2)',
+            '3' => 'GOST R 34.11-94 (3)' 
+        ];
+    }
+
+    /**
+     * Returns an array of DNSSEC algorithms for use in selects
+     * 
+     * @return array An array of DNSSEC algorithms
+     */
+    private function getSelectDnssecAlgorithms()
+    {
+        return [
+            '' => Language::_('AppController.select.please', true),
+            '1' => 'RSA/MD5 (1)',
+            '2' => 'Diffie-Hellman (2)',
+            '3' => 'DSA/SHA-1 (3)',
+            '4' => 'Elliptic Curve (4)',
+            '5' => 'RSA/SHA-1 (5)',
+            '6' => 'DSA-NSEC3-SHA1 (6)',
+            '7' => 'RSASHA1-NSEC3-SHA1 (7)',
+            '8' => 'RSA/SHA-256 (8)',
+            '10' => 'RSA/SHA-512 (10)',
+            '12' => 'ECC-GOST (12)',
+            '13' => 'ECDSA Curve P-256 with SHA-256 (13)',
+            '14' => 'ECDSA Curve P-384 with SHA-384 (14)',
+            '252' => 'Indirect (252)',
+            '253' => 'Private DNS (253)',
+            '254' => 'Private OID (254)'
+        ];
+    }
+
+    /**
+     * Fetches the domain records for the given domain
+     * 
+     * @param LogicboxesApi $api The API instance
+     * @param string $domain The domain to fetch records for
+     * @return array An array of domain records
+     */
+    private function getDomainRecords(LogicboxesApi $api, $domain)
+    {
+        // If there are errors from previous requests, ignore them while doing requests now
+        if ($old_errors = $this->Input->errors()) {
+            $this->Input->setErrors([]);
+        }
+
+        $api->loadCommand('logicboxes_dns_manage');
+        $dns = new LogicboxesDnsManage($api);
+
+        $records = [];
+        foreach (Configure::get('Logicboxes.dns_record_types') as $type) {
+            $page = 0;
+            $type_records = [];
+
+            do {
+                $request = $dns->searchRecords([
+                    'domain-name' => $domain,
+                    'type' => $type,
+                    'no-of-records' => 50,
+                    'page-no' => ++$page
+                ]);
+                $this->processResponse($api, $request);
+
+                if ($errors = $this->Input->errors()) {
+                    $old_errors = array_merge($old_errors ? $old_errors : [], $errors);
+                    $this->Input->setErrors([]);
+                    break;
+                }
+
+                $response = $request->response();
+                if (($response->recsonpage ?? null) == 0) {
+                    break;
+                }
+
+                foreach ($response as $key => $value) {
+                    if (filter_var($key, FILTER_VALIDATE_INT)) {
+                        $type_records[] = $value;
+                    }
+                }
+            } while ($page <= 10 && count($type_records) < $response->recsindb);
+
+            $records = array_merge($records, $type_records);
+        }
+
+        if ($old_errors) {
+            $this->Input->setErrors($old_errors);
+        }
+
+        return $records;
     }
 }
