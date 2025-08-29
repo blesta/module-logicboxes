@@ -203,7 +203,7 @@ class Logicboxes extends RegistrarModule
             $tld = $this->getTld($vars['domain'], true);
         }
 
-        if ($package->meta->type == 'domain') {
+        if (($package->meta->type ?? 'domain') == 'domain') {
             $contact_fields = Configure::get('Logicboxes.contact_fields');
             $customer_fields = Configure::get('Logicboxes.customer_fields');
             $domain_field_basics = [
@@ -232,7 +232,7 @@ class Logicboxes extends RegistrarModule
         }
 
         if (isset($vars['use_module']) && $vars['use_module'] == 'true') {
-            if ($package->meta->type == 'domain') {
+            if (($package->meta->type ?? 'domain') == 'domain') {
                 $api->loadCommand('logicboxes_domains');
                 $domains = new LogicboxesDomains($api);
 
@@ -423,12 +423,11 @@ class Logicboxes extends RegistrarModule
                 #
             }
         } elseif ($status == 'active') {
-            if ($package->meta->type == 'domain') {
+            if (($package->meta->type ?? 'domain') == 'domain') {
                 $api->loadCommand('logicboxes_domains');
                 $domains = new LogicboxesDomains($api);
 
-                $vars['domain-name'] = $vars['domain'] ?? '';
-                $order = array_intersect_key($vars, ['domain-name' => '']);
+                $order = array_intersect_key($vars, ['domain-name' => $vars['domain']]);
                 $response = $domains->orderid($order);
                 $this->processResponse($api, $response);
 
@@ -653,7 +652,7 @@ class Logicboxes extends RegistrarModule
         $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
 
         // Renew domain
-        if ($package->meta->type == 'domain') {
+        if (($package->meta->type ?? 'domain') == 'domain') {
             $fields = $this->serviceFieldsToObject($service->fields);
 
             // Load the API
@@ -1030,7 +1029,7 @@ class Logicboxes extends RegistrarModule
      */
     public function getAdminAddFields($package, $vars = null)
     {
-        if ($package->meta->type == 'domain') {
+        if (($package->meta->type ?? 'domain') == 'domain') {
             // Set default name servers
             if (!isset($vars->ns1) && isset($package->meta->ns)) {
                 $i=1;
@@ -1084,7 +1083,7 @@ class Logicboxes extends RegistrarModule
      */
     public function getClientAddFields($package, $vars = null)
     {
-        if ($package->meta->type == 'domain') {
+        if (($package->meta->type ?? 'domain') == 'domain') {
             // Set default name servers
             if (!isset($vars->ns1) && isset($package->meta->ns)) {
                 $i=1;
@@ -1151,8 +1150,7 @@ class Logicboxes extends RegistrarModule
      */
     public function getAdminEditFields($package, $vars = null)
     {
-        if ($package->meta->type == 'domain') {
-            
+        if (($package->meta->type ?? 'domain') == 'domain') {
             return $this->arrayToModuleFields([
                 'order-id' => [
                     'label' => Language::_('Logicboxes.domain.order_id', true),
@@ -1205,7 +1203,7 @@ class Logicboxes extends RegistrarModule
 
         $package = $this->Packages->get($service->package_id ?? $service->package->id);
 
-        if ($package->meta->type == 'domain') {
+        if (($package->meta->type ?? 'domain') == 'domain') {
             $tabs = [
                 'tabWhois' => Language::_('Logicboxes.tab_whois.title', true),
                 'tabForwarder' => Language::_('Logicboxes.tab_forwarder.title', true),
