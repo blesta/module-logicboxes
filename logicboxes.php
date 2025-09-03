@@ -427,7 +427,8 @@ class Logicboxes extends RegistrarModule
                 $api->loadCommand('logicboxes_domains');
                 $domains = new LogicboxesDomains($api);
 
-                $order = array_intersect_key($vars, ['domain-name' => $vars['domain']]);
+                $vars['domain-name'] = $vars['domain'] ?? '';
+                $order = array_intersect_key($vars, ['domain-name' => null]);
                 $response = $domains->orderid($order);
                 $this->processResponse($api, $response);
 
