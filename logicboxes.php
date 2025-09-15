@@ -488,14 +488,10 @@ class Logicboxes extends RegistrarModule
         // Get the service fields
         $service_fields = $this->serviceFieldsToObject($service->fields);
 
-        // Load the API
-        $row = $this->getModuleRow($package->module_row);
-        $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
-
-        $api->loadCommand('logicboxes_domains');
-        $domains = new LogicboxesDomains($api);
-
         $fields = null;
+        $order_id = null;
+
+        // Handle order-id and domain fields regardless of "Use Module" setting
         if (isset($vars['order-id'])) {
             $order_id = $vars['order-id'];
             $fields = [
@@ -503,19 +499,28 @@ class Logicboxes extends RegistrarModule
                 ['key' => 'domain', 'value' => ($service_fields->domain ?? ''), 'encrypted' => 0]
             ];
         } elseif (empty($service_fields->{'order-id'})) {
-            // Fetch the order ID
-            $response = $domains->orderid(
-                ['domain-name' => ($service_fields->domain ?? '')]
-            );
-            $this->processResponse($api, $response);
+            // Only fetch the order ID via API if "Use Module" is checked
+            if (isset($vars['use_module']) && $vars['use_module'] == 'true') {
+                // Load the API
+                $row = $this->getModuleRow($package->module_row);
+                $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
 
-            if ($this->Input->errors()) {
-                return;
-            }
+                $api->loadCommand('logicboxes_domains');
+                $domains = new LogicboxesDomains($api);
 
-            $order_id = null;
-            if ($response->response()) {
-                $order_id = $response->response();
+                // Fetch the order ID
+                $response = $domains->orderid(
+                    ['domain-name' => ($service_fields->domain ?? '')]
+                );
+                $this->processResponse($api, $response);
+
+                if ($this->Input->errors()) {
+                    return;
+                }
+
+                if ($response->response()) {
+                    $order_id = $response->response();
+                }
             }
 
             $fields = [
@@ -530,7 +535,17 @@ class Logicboxes extends RegistrarModule
             }
         }
 
-        if (isset($order_id)) {
+        // Only make API calls for privacy protection and DNS management if "Use Module" is checked
+        if (isset($vars['use_module']) && $vars['use_module'] == 'true' && isset($order_id)) {
+            // Load the API if not already loaded
+            if (!isset($api)) {
+                $row = $this->getModuleRow($package->module_row);
+                $api = $this->getApi($row->meta->reseller_id, $row->meta->key, $row->meta->sandbox == 'true');
+
+                $api->loadCommand('logicboxes_domains');
+                $domains = new LogicboxesDomains($api);
+            }
+
             // Handle whois privacy via config option
             $id_protection = $this->featureServiceEnabled('id_protection', $service);
             if (!$id_protection && isset($vars['configoptions']['id_protection'])) {
