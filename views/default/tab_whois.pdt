@@ -9,20 +9,17 @@
     ?>
 
     <?php
-    $i=0;
-    foreach ($sections as $key) {
-    ?>
-    <div class="title_row<?php echo ($i == 0 ? ' first' : '');?>">
-        <h3><?php $this->_('Logicboxes.tab_whois.section_' . $key);?></h3>
+    $i = 0;
+    foreach ($sections as $key) { ?>
+    <div class="title_row<?php echo $i == 0 ? ' first' : ''; ?>">
+        <h3><?php $this->_('Logicboxes.tab_whois.section_' . $key); ?></h3>
     </div>
     <div class="pad">
         <ul>
-            <?php
-            foreach ($fields as $field) {
+            <?php foreach ($fields as $field) {
                 if ($field->type != 'label' || substr($field->params['for'], 0, strlen($key)) != $key) {
                     continue;
-                }
-            ?>
+                } ?>
             <li>
                 <?php
                 // Draw the primary label/field
@@ -55,30 +52,26 @@
                     }
                 }
 
-                foreach ($tooltips as $tooltip) {
-                ?>
+                foreach ($tooltips as $tooltip) { ?>
                 <span class="tooltip">
-                    <?php $this->_('AppController.tooltip.text');?>
-                    <div><?php echo (isset($tooltip->params['message']) ? $this->Html->safe($tooltip->params['message']) : null);?></div>
+                    <?php $this->_('AppController.tooltip.text'); ?>
+                    <div><?php echo isset($tooltip->params['message'])
+                        ? $this->Html->safe($tooltip->params['message'])
+                        : null; ?></div>
                 </span>
-                <?php
-                }
+                <?php }
                 ?>
             </li>
             <?php
-            }
-            ?>
+            } ?>
         </ul>
     </div>
-    <?php
-        $i++;
-    }
+    <?php $i++;}
     ?>
     <div class="button_row">
-        <?php
-        $this->Form->fieldSubmit('save', $this->_('Logicboxes.tab_whois.field_submit', true), ['class' => 'btn btn-primary float-right']);
-        ?>
+        <?php $this->Form->fieldSubmit('save', $this->_('Logicboxes.tab_whois.field_submit', true), [
+            'class' => 'btn btn-primary float-right',
+        ]); ?>
     </div>
-    <?php
-    $this->Form->end();
-    ?>
+    <?php $this->Form->end();
+?>
