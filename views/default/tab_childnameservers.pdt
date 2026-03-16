@@ -18,7 +18,9 @@
                 <tbody>
                     <?php foreach ($cns as $i => $ns) { ?>
                         <tr>
-                            <?php $this->Form->create(); ?>
+                            <?php
+$this->Form->create();
+?>
                                 <?php
                                 $this->Form->fieldHidden('old-cns', $ns['cns'] ?? null);
                                 $this->Form->fieldHidden('old-ip', implode(',', $ns['ip'] ?? null));
@@ -65,7 +67,9 @@
     <?php } ?>
 
     <h6 class="form-section-header mt-4"><?php $this->_('Logicboxes.tab_dnsrecord.title_add'); ?></h6>
-    <?php $this->Form->create(); ?>
+    <?php
+$this->Form->create();
+?>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead>

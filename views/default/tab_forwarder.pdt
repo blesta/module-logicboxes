@@ -4,7 +4,9 @@
 <div id="dns-records">
     <h6 class="form-section-header"><?php $this->_('Logicboxes.tab_forwarder.title'); ?></h6>
 
-    <?php $this->Form->create(); ?>
+    <?php
+$this->Form->create();
+?>
         <div class="row g-3">
             <div class="col-12">
                 <?php $this->Form->label($this->_('Logicboxes.tab_forwarder.forward_to', true), 'forward_to', ['class' => 'form-label']); ?>
