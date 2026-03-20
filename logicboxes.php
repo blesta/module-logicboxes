@@ -2552,7 +2552,7 @@ class Logicboxes extends RegistrarModule
             Configure::get('Blesta.company_id') . DS . 'modules' . DS . 'logicboxes' . DS
         );
         if ($maping_cache) {
-            $tld_mapping = unserialize(base64_decode($maping_cache));
+            $tld_mapping = safe_unserialize(base64_decode($maping_cache));
         } else {
             $tld_mapping = $this->getTldProductMapping($api);
             $this->writeCache('tlds_mapping', $tld_mapping);
@@ -2564,7 +2564,7 @@ class Logicboxes extends RegistrarModule
             Configure::get('Blesta.company_id') . DS . 'modules' . DS . 'logicboxes' . DS
         );
         if ($pricing_cache) {
-            $product_pricings = unserialize(base64_decode($pricing_cache));
+            $product_pricings = safe_unserialize(base64_decode($pricing_cache));
         } else {
             $product_pricings = $this->getTldProductPricings($api);
             $this->writeCache('tlds_prices', $product_pricings);
@@ -2576,7 +2576,7 @@ class Logicboxes extends RegistrarModule
             Configure::get('Blesta.company_id') . DS . 'modules' . DS . 'logicboxes' . DS
         );
         if ($reseller_cache) {
-            $details = unserialize(base64_decode($reseller_cache));
+            $details = safe_unserialize(base64_decode($reseller_cache));
         }
         if (!isset($details)) {
             $api->loadCommand('logicboxes_reseller');
@@ -2662,7 +2662,7 @@ class Logicboxes extends RegistrarModule
             try {
                 Cache::writeCache(
                     $cache_name,
-                    base64_encode(serialize($content)),
+                    base64_encode(safe_serialize($content)),
                     strtotime(Configure::get('Blesta.cache_length')) - time(),
                     Configure::get('Blesta.company_id') . DS . 'modules' . DS . 'logicboxes' . DS
                 );
