@@ -6,7 +6,7 @@
             <div class="form-group">
                 <?php
                 $this->Form->label($this->_('Logicboxes.tab_nameserver.field_ns', true, $i + 1), 'ns' . ($i + 1));
-                $this->Form->fieldText('ns[]', isset($vars->ns[$i]) ? $vars->ns[$i] : null, [
+                $this->Form->fieldText('ns[]', $vars->ns[$i] ?? null, [
                     'id' => 'ns' . ($i + 1),
                     'class' => 'form-control',
                     'placeholder' => $this->_('Logicboxes.tab_nameserver.field_ns', true, $i + 1),
@@ -20,4 +20,4 @@
         <i class="fas fa-edit"></i> <?php $this->_('Logicboxes.tab_nameservers.field_submit'); ?>
     </button>
     <?php $this->Form->end();
-?>
+    ?>

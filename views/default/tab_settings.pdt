@@ -9,7 +9,7 @@ $this->Form->create();
                     $this->Form->fieldRadio(
                         'registrar_lock',
                         'true',
-                        (isset($vars->registrar_lock) ? $vars->registrar_lock : null) == 'true',
+                        ($vars->registrar_lock ?? null) == 'true',
                         ['id' => 'registrar_lock_yes', 'class' => 'form-check-input'],
                     );
                     $this->Form->label(
@@ -24,7 +24,7 @@ $this->Form->create();
                     $this->Form->fieldRadio(
                         'registrar_lock',
                         'false',
-                        (isset($vars->registrar_lock) ? $vars->registrar_lock : null) == 'false',
+                        ($vars->registrar_lock ?? null) == 'false',
                         ['id' => 'registrar_lock_no', 'class' => 'form-check-input'],
                     );
                     $this->Form->label(
@@ -41,7 +41,7 @@ $this->Form->create();
                     $this->Form->fieldCheckbox(
                         'request_epp',
                         'true',
-                        (isset($vars->request_epp) ? $vars->request_epp : null) == 'true',
+                        ($vars->request_epp ?? null) == 'true',
                         ['id' => 'request_epp', 'class' => 'form-check-input'],
                     );
                     $this->Form->label($this->_('Logicboxes.tab_settings.field_request_epp', true), 'request_epp', [
@@ -49,7 +49,7 @@ $this->Form->create();
                     ]);
                     ?>
                 </div>
-                <div id="epp_code_display" class="mt-2"<?php echo (isset($vars->request_epp) ? $vars->request_epp : null) == 'true'
+                <div id="epp_code_display" class="mt-2"<?php echo ($vars->request_epp ?? null) == 'true'
                     ? ''
                     : ' style="display: none;"'; ?>>
                     <strong class="epp_code"><?php echo isset($vars->epp_code)

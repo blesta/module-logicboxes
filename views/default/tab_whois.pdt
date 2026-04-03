@@ -17,7 +17,7 @@
             if ($field->type != 'label' || substr($field->params['for'], 0, strlen($key)) != $key) {
                 continue;
             }
-        ?>
+            ?>
         <div class="col-md-6">
             <?php
             // Draw the primary label/field
@@ -78,7 +78,7 @@
                 $message = isset($tooltip->params['message'])
                     ? $this->Html->safe($tooltip->params['message'])
                     : null;
-            ?>
+                ?>
                 <i class="bi bi-info-circle ms-1"
                    data-bs-toggle="tooltip"
                    data-bs-placement="top"
@@ -86,10 +86,11 @@
             <?php }
             ?>
         </div>
-        <?php
+            <?php
         } ?>
     </div>
-    <?php $i++;}
+        <?php $i++;
+    }
     ?>
 
     <div class="d-flex gap-2 justify-content-end mt-3">
@@ -108,4 +109,4 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 ');
-?>
+    ?>

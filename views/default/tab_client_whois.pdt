@@ -24,8 +24,8 @@
                 $i = 0;
                 foreach ($sections as $index => $key) { ?>
                 <div class="tab-pane fade show<?php echo $index == 0 ? ' active' : ''; ?>" id="<?php echo isset($key)
-    ? $this->Html->safe($key)
-    : null; ?>">
+                ? $this->Html->safe($key)
+                : null; ?>">
                     <?php foreach ($fields as $field) {
                         if ($field->type != 'label' || substr($field->params['for'], 0, strlen($key)) != $key) {
                             continue;
@@ -62,7 +62,7 @@
                                     : null; ?>"><i class="fas fa-question-circle text-primary"></i></a>
                                 <?php } ?>
                             </div>
-                            <?php
+                                <?php
                             } else {
                                 if (isset($input->params['attributes']['class'])) {
                                     if (is_array($input->params['attributes']['class'])) {
@@ -74,9 +74,7 @@
                                     $input->params['attributes']['class'] = 'form-control';
                                 }
 
-                                $input->params['attributes']['placeholder'] = isset($field->params['name'])
-                                    ? $field->params['name']
-                                    : null;
+                                $input->params['attributes']['placeholder'] = $field->params['name'] ?? null;
 
                                 // Draw the primary label/field
                                 call_user_func_array([$this->Form, $field->type], $field->params);
@@ -91,7 +89,7 @@
                         }
                         ?>
                     </div>
-                    <?php
+                        <?php
                     } ?>
                 </div>
                 <?php }
@@ -103,4 +101,4 @@
         <i class="fas fa-edit"></i> <?php $this->_('Logicboxes.tab_whois.field_submit'); ?>
     </button>
     <?php $this->Form->end();
-?>
+    ?>

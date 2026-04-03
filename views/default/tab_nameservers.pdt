@@ -7,7 +7,7 @@ $this->Form->create();
             <div class="col-md-6">
                 <?php
                 $this->Form->label($this->_('Logicboxes.tab_nameserver.field_ns', true, $i + 1), 'ns' . ($i + 1), ['class' => 'form-label']);
-                $this->Form->fieldText('ns[]', isset($vars->ns[$i]) ? $vars->ns[$i] : null, [
+                $this->Form->fieldText('ns[]', $vars->ns[$i] ?? null, [
                     'id' => 'ns' . ($i + 1),
                     'class' => 'form-control',
                 ]);

@@ -10,7 +10,7 @@
                         $this->Form->fieldRadio(
                             'registrar_lock',
                             'true',
-                            (isset($vars->registrar_lock) ? $vars->registrar_lock : null) == 'true',
+                            ($vars->registrar_lock ?? null) == 'true',
                         );
                         $this->_('Logicboxes.tab_settings.field_registrar_lock_yes');
                         ?>
@@ -22,7 +22,7 @@
                         $this->Form->fieldRadio(
                             'registrar_lock',
                             'false',
-                            (isset($vars->registrar_lock) ? $vars->registrar_lock : null) == 'false',
+                            ($vars->registrar_lock ?? null) == 'false',
                         );
                         $this->_('Logicboxes.tab_settings.field_registrar_lock_no');
                         ?>
@@ -36,7 +36,7 @@
                         $this->Form->fieldCheckbox(
                             'request_epp',
                             'true',
-                            (isset($vars->request_epp) ? $vars->request_epp : null) == 'true',
+                            ($vars->request_epp ?? null) == 'true',
                             ['id' => 'request_epp'],
                         );
                         $this->_('Logicboxes.tab_settings.field_request_epp');
