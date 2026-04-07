@@ -38,7 +38,7 @@
                                 $this->Form->fieldHidden('digest', $record->digest ?? null);
 
                                 $button_attributes = [
-                                    'class' => 'btn btn-sm btn-outline-danger',
+                                    'class' => 'btn btn-sm btn-danger',
                                     'value' => 'deleteDsRecord',
                                     'type' => 'submit',
                                 ];
@@ -82,7 +82,7 @@ $this->Form->create();
                 <tbody>
                     <tr>
                         <td><?php $this->Form->fieldNumber('keytag', null, 0, 65536, 1, [
-                            'class' => 'form-control form-control-sm',
+                            'class' => 'form-control',
                         ]); ?></td>
                         <td><?php $this->Form->fieldSelect('algorithm', $algorithms ?? [], null, [
                             'class' => 'form-select',

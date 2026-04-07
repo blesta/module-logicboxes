@@ -38,7 +38,7 @@
                                 $this->Form->fieldHidden('weight', $record->weight ?? null);
 
                                 $button_attributes = [
-                                    'class' => 'btn btn-sm btn-outline-danger',
+                                    'class' => 'btn btn-sm btn-danger',
                                     'value' => 'deleteDnsRecord',
                                     'type' => 'submit',
                                 ];
@@ -85,25 +85,25 @@ $this->Form->create();
                 <tbody>
                     <tr>
                         <td><?php $this->Form->fieldSelect('type', $types ?? [], null, [
-                            'class' => 'form-select form-select-sm',
+                            'class' => 'form-select',
                         ]); ?></td>
                         <td><?php $this->Form->fieldText('host', null, ['class' => 'form-control']); ?></td>
                         <td><?php $this->Form->fieldText('value', null, ['class' => 'form-control']); ?></td>
                         <td><?php $this->Form->fieldNumber('ttl', null, null, null, null, [
-                            'class' => 'form-control form-control-sm',
+                            'class' => 'form-control',
                         ]); ?></td>
                         <td><?php $this->Form->fieldNumber('priority', null, null, null, null, [
-                            'class' => 'form-control form-control-sm',
+                            'class' => 'form-control',
                             'id' => 'priority',
                             'disabled' => '',
                         ]); ?></td>
                         <td><?php $this->Form->fieldNumber('port', null, 0, 65535, 1, [
-                            'class' => 'form-control form-control-sm',
+                            'class' => 'form-control',
                             'id' => 'port',
                             'disabled' => '',
                         ]); ?></td>
                         <td><?php $this->Form->fieldNumber('weight', null, null, null, null, [
-                            'class' => 'form-control form-control-sm',
+                            'class' => 'form-control',
                             'id' => 'weight',
                             'disabled' => '',
                         ]); ?></td>

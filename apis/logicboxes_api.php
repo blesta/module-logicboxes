@@ -151,13 +151,13 @@ class LogicboxesApi
             if (is_array($value)) {
                 foreach ($value as $subkey => $subvalue) {
                     if (is_numeric($subkey)) {
-                        $query[] = rawurlencode($key) . '=' . rawurlencode($subvalue);
+                        $query[] = rawurlencode($key) . '=' . rawurlencode($subvalue ?? '');
                     } else {
-                        $query[] = rawurlencode($key . '[' . $subkey . ']') . '=' . rawurlencode($subvalue);
+                        $query[] = rawurlencode($key . '[' . $subkey . ']') . '=' . rawurlencode($subvalue ?? '');
                     }
                 }
             } else {
-                $query[] = rawurlencode($key) . '=' . rawurlencode($value);
+                $query[] = rawurlencode($key) . '=' . rawurlencode($value ?? '');
             }
         }
         return implode('&', $query);

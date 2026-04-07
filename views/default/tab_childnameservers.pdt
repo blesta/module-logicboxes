@@ -35,20 +35,22 @@ $this->Form->create();
                                     <div class="d-flex gap-2 justify-content-end">
                                         <?php $this->Form->fieldButton(
                                             'action',
-                                            $this->_('Logicboxes.tab_childnameservers.action_modify', true),
+                                            '<i class="bi bi-pencil"></i>',
                                             [
-                                                'class' => 'btn btn-sm btn-outline-primary',
+                                                'class' => 'btn btn-sm btn-outline-secondary',
                                                 'value' => 'modifyCns',
                                                 'type' => 'submit',
+                                                'title' => $this->_('Logicboxes.tab_childnameservers.action_modify', true),
                                             ],
                                         ); ?>
                                         <?php $this->Form->fieldButton(
                                             'action',
-                                            $this->_('Logicboxes.tab_childnameservers.action_delete', true),
+                                            '<i class="bi bi-trash"></i>',
                                             [
                                                 'class' => 'btn btn-sm btn-outline-danger',
                                                 'value' => 'deleteCns',
                                                 'type' => 'submit',
+                                                'title' => $this->_('Logicboxes.tab_childnameservers.action_delete', true),
                                             ],
                                         ); ?>
                                     </div>
