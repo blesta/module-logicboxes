@@ -837,7 +837,7 @@ class Logicboxes extends RegistrarModule
         $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
 
         // Load the helpers required for this view
-        Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
+        Loader::loadHelpers($this, ['Form', 'Html', 'Javascript', 'Widget']);
 
         // Set unspecified checkboxes
         if (!empty($vars)) {
@@ -846,6 +846,13 @@ class Logicboxes extends RegistrarModule
             }
         }
 
+        // Fetch module
+        Loader::loadModels($this, ['ModuleManager']);
+        $module = $this->ModuleManager->getByClass(
+            \Illuminate\Support\Str::snake(get_class($this)),
+            Configure::get('Blesta.company_id')
+        );
+        $this->view->set('module', (object) ($module[0] ?? []));
         $this->view->set('vars', (object)$vars);
         return $this->view->fetch();
     }
@@ -866,7 +873,7 @@ class Logicboxes extends RegistrarModule
         $this->view->setDefaultView('components' . DS . 'modules' . DS . 'logicboxes' . DS);
 
         // Load the helpers required for this view
-        Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
+        Loader::loadHelpers($this, ['Form', 'Html', 'Javascript', 'Widget']);
 
         if (empty($vars)) {
             $vars = $module_row->meta;
@@ -877,6 +884,13 @@ class Logicboxes extends RegistrarModule
             }
         }
 
+        // Fetch module
+        Loader::loadModels($this, ['ModuleManager']);
+        $module = $this->ModuleManager->getByClass(
+            \Illuminate\Support\Str::snake(get_class($this)),
+            Configure::get('Blesta.company_id')
+        );
+        $this->view->set('module', (object) ($module[0] ?? []));
         $this->view->set('vars', (object)$vars);
         return $this->view->fetch();
     }
@@ -2401,7 +2415,8 @@ class Logicboxes extends RegistrarModule
 
         $response = $result->response();
 
-        return in_array($response->{$domain}->status, ['unknown', 'available']);
+        return isset($response->{$domain}->status)
+            && in_array($response->{$domain}->status, ['unknown', 'available']);
     }
 
     /**
