@@ -2662,7 +2662,7 @@ class Logicboxes extends RegistrarModule
             try {
                 Cache::writeCache(
                     $cache_name,
-                    base64_encode(safe_serialize($content)),
+                    base64_encode(serialize($content)),
                     strtotime(Configure::get('Blesta.cache_length')) - time(),
                     Configure::get('Blesta.company_id') . DS . 'modules' . DS . 'logicboxes' . DS
                 );
