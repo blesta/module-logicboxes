@@ -2821,11 +2821,13 @@ class Logicboxes extends RegistrarModule
 
         // Set errors, if any
         if ($response->status() != 'OK') {
+            $errors = [];
             if (isset($response->errors()->message)) {
                 $errors = $response->errors()->message;
             } elseif (isset($response->errors()->error)) {
                 $errors = $response->errors()->error;
             }
+
             $this->Input->setErrors(['errors' => (array)$errors]);
         }
     }
