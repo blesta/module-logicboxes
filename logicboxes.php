@@ -546,14 +546,15 @@ class Logicboxes extends RegistrarModule
                 $domains = new LogicboxesDomains($api);
             }
 
-            // Handle whois privacy via config option
+            // Handle whois privacy via config option, only when the desired state changes
             $id_protection = $this->featureServiceEnabled('id_protection', $service);
-            if (!$id_protection && isset($vars['configoptions']['id_protection'])) {
-                // Enable whois privacy
+            $wants_id_protection = isset($vars['configoptions']['id_protection']);
+            if (!$id_protection && $wants_id_protection) {
+                // Enable whois privacy (newly purchased)
                 $response = $domains->modifyPrivacyProtection(['order-id' => $order_id, 'protect-privacy' => 'true', 'reason' => 'Module Action']);
                 $this->processResponse($api, $response);
-            } else {
-                // Disable whois privacy
+            } elseif ($id_protection && !$wants_id_protection) {
+                // Disable whois privacy (only when previously purchased)
                 $response = $domains->modifyPrivacyProtection(['order-id' => $order_id, 'protect-privacy' => 'false', 'reason' => 'Module Action']);
                 $this->processResponse($api, $response);
             }
