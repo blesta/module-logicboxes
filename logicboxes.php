@@ -2863,15 +2863,14 @@ class Logicboxes extends RegistrarModule
      */
     private function getTld($domain, $top = false)
     {
-        $tlds = $this->getTlds();
-
         $domain = strtolower($domain);
 
         if (!$top) {
-            foreach ($tlds as $tld) {
-                if (substr($domain, -strlen($tld)) == $tld) {
-                    return $tld;
-                }
+            $tlds = (array) $this->getTlds();
+            $tld = $this->findTld($domain, $tlds);
+
+            if (in_array($tld, $tlds)) {
+                return $tld;
             }
         }
         return strrchr($domain, '.');
