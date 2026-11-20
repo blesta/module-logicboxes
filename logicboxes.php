@@ -53,6 +53,7 @@ class Logicboxes extends RegistrarModule
                 ->leftJoin('module_rows', 'module_rows.id', '=', 'services.module_row_id', false)
                 ->leftJoin('modules', 'modules.id', '=', 'module_rows.module_id', false)
                 ->where('modules.class', '=', 'logicboxes')
+                ->where('modules.id', '=', $this->getModule()->id)
                 ->fetchAll();
 
             foreach ($services as $service) {
@@ -61,6 +62,11 @@ class Logicboxes extends RegistrarModule
                     ->where('service_fields.service_id', '=', $service->id)
                     ->where('service_fields.key', '=', 'domain-name')
                     ->fetch();
+
+                if (!$domain) {
+                    continue;
+                }
+
                 $field = [
                     'service_id' => $service->id,
                     'key' => 'domain',
